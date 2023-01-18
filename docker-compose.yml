@@ -1,0 +1,150 @@
+version: '3'
+services:
+########## OpenTOSCA ##########
+  container:
+    image: opentosca/container:latest
+    ports:
+      - '1337:1337'
+      - '1883:1883' # MQTT
+      - '8081-8087:8081-8087'
+    environment:
+      CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      ENGINE_IA_HOSTNAME: engine-ia-jdk8
+      ENGINE_IA_PORT: 8080
+      ENGINE_IA_JAVA17_HOSTNAME: engine-ia-jdk17
+      ENGINE_IA_JAVA17_PORT: 8080
+      ENGINE_PLAN_BPEL_HOSTNAME: engine-plan-bpel
+      ENGINE_PLAN_BPMN_HOSTNAME: engine-plan-bpmn
+      ENGINE_PLAN_BPMN_PORT: 8080
+      CONTAINER_DEPLOYMENT_TESTS: 'false'
+    networks:
+      - lauffeuer
+  ui:
+    image: opentosca/ui:latest
+    environment:
+     API_ENDPOINT_HOST: ${PUBLIC_HOSTNAME}
+     API_ENDPOINT_PORT: 1337
+     WINERY_HOST: ${PUBLIC_HOSTNAME}
+     WINERY_PORT: 8080
+    ports:
+      - '8088:8080'
+    networks:
+      - lauffeuer
+  engine-plan-bpel:
+    image: opentosca/ode:latest
+    environment:
+      _JAVA_OPTIONS: "-Xmx3048m -Xms512m -Xss4m"
+      JAVA_OPTS: -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n
+    ports:
+      - '9763:9763' # http
+    networks:
+      - lauffeuer
+  engine-ia-jdk17:
+    image: opentosca/engine-ia:latest-jdk17
+    ports:
+      - '8093:8080'
+    networks:
+      - lauffeuer
+  winery:
+    image: opentosca/winery:latest
+    environment:
+      WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
+      WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      WINERY_REPOSITORY_URL: https://github.com/lharzenetter/tosca-lauffeuer-modeling
+    ports:
+      - '8080:8080'
+    networks:
+      - lauffeuer
+  dind:
+    image: docker:20.10-dind
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=
+    networks:
+      - lauffeuer
+    ports: 
+      - '2222:2375'
+      - '9990-9999:9990-9999'
+      - '9990-9999:9990-9999/udp'
+########## PatternAtlas ##########
+  db:
+    image: postgres:15
+    environment:
+        POSTGRES_USER: patternatlas
+        POSTGRES_PASSWORD: patternatlas
+        POSTGRES_DB: patternatlas
+    ports:
+        - "5060:5432"
+    networks:
+      - lauffeuer
+  pattern-atlas-api:
+    image: patternatlas/pattern-atlas-api:latest
+    environment:
+      JDBC_DATABASE_URL: db
+      JDBC_DATABASE_USERNAME: patternatlas
+      JDBC_DATABASE_PASSWORD: patternatlas
+      JDBC_DATABASE_PORT: 5432
+      DB_INIT_USER: patternatlas
+      DB_INIT_PASSWORD: patternatlas
+      LATEX_RENDERER_HOST_NAME: latex-renderer
+      LATEX_RENDERER_PORT: 5030
+      JDBC_DATABASE_NAME: patternatlas
+      PATTERN_ATLAS_FETCH_INITIAL_DATA: 'true'
+      HAL_EXPLORER: 'false'
+      # activate correct application properties
+      SPRING_PROFILES_ACTIVE: docker
+      JWK_URI: http://auth:7080/realms/patternatlas/protocol/openid-connect/certs
+      SECURITY_LOGLEVEL: info
+    ports:
+      - "1977:1977"
+    networks:
+      - lauffeuer
+    depends_on:
+      - db
+      - latex-renderer
+    restart: on-failure
+  pattern-atlas-ui:
+    image: patternatlas/pattern-atlas-ui:latest
+    depends_on:
+      - config-server
+    environment:
+      # because the requests are performed from the browser and not
+      # from the container itself we have to specify localhost here
+      # and **not** the container name
+      PATTERN_ATLAS_API_HOST_NAME: ${PUBLIC_HOSTNAME}
+      PATTERN_ATLAS_API_PORT: 1977
+      LATEX_RENDERER_HOST_NAME: ${PUBLIC_HOSTNAME}
+      LATEX_RENDERER_PORT: 5030
+      URL_SCHEME: http
+      AUTH_REALM_URL: http://${PUBLIC_HOSTNAME}:7080/realms/patternatlas
+    ports:
+      - "1978:80"
+  auth:
+    image: quay.io/keycloak/keycloak:18.0.0
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak_import:/opt/keycloak/data/import
+    environment:
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+    ports:
+      - "7080:8080"
+    networks:
+      - lauffeuer
+  config-server:
+    image: quay.io/coreos/etcd:v3.3.8
+    environment:
+      ETCD_NAME: config-node1
+      ETCD_CORS: "*"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://config-server:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCDCTL_API: 3
+    ports:
+      - "2379:2379"
+    networks:
+      - lauffeuer
+networks:
+  opentosca:
+    driver: bridge

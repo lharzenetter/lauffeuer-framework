@@ -1,0 +1,19 @@
+version: '3'
+services:
+  # container:
+  #   environment:
+  #     CONTAINER_JAVA_OPTS: |-
+  #       -Xdebug
+  #       -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n
+  #   volumes:
+  #     - <path on host system>:/tmp/opentosca
+  # winery:
+  #   # settings for mapping a local repository into Winery
+  #   environment:
+  #     WINERY_REPOSITORY_PATH: /var/opentosca/repository
+  #   volumes:
+  #     - C:/path/to/tosca-repository:/var/opentosca/repository
+  # dind:
+  #   volumes:
+  #     # Enable University of Stuttgart internal DNS settings via corresponding config file
+  #     - ./resolv.conf:/etc/resolv.conf
