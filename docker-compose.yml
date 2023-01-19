@@ -45,18 +45,18 @@ services:
       - '8093:8080'
     networks:
       - lauffeuer
-  winery:
-    image: opentosca/winery:latest
-    environment:
-      WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
-      WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
-      TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
-      CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
-      WINERY_REPOSITORY_URL: https://github.com/lharzenetter/tosca-lauffeuer-modeling
-    ports:
-      - '8080:8080'
-    networks:
-      - lauffeuer
+  # winery:
+  #   image: opentosca/winery:latest
+  #   environment:
+  #     WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
+  #     WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+  #     TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+  #     CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
+  #     WINERY_REPOSITORY_URL: https://github.com/lharzenetter/tosca-lauffeuer-modeling
+  #   ports:
+  #     - '8080:8080'
+  #   networks:
+  #     - lauffeuer
   dind:
     image: docker:20.10-dind
     privileged: true
@@ -103,7 +103,6 @@ services:
       - lauffeuer
     depends_on:
       - db
-      - latex-renderer
     restart: on-failure
   pattern-atlas-ui:
     image: patternatlas/pattern-atlas-ui:latest
