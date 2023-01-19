@@ -1,10 +1,10 @@
 {
   "features": {
     "designModel": false,
-    "patternCandidate": true,
+    "patternCandidate": false,
     "patternViews": false,
-    "issue": true,
-    "showSettings": false,
+    "issue": false,
+    "showSettings": true,
     "editing": true,
 	"authentication": true
   }

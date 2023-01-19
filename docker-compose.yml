@@ -121,6 +121,8 @@ services:
       AUTH_REALM_URL: http://${PUBLIC_HOSTNAME}:7080/realms/patternatlas
     ports:
       - "1978:80"
+    networks:
+      - lauffeuer
   auth:
     image: quay.io/keycloak/keycloak:18.0.0
     command: start-dev --import-realm
@@ -146,5 +148,5 @@ services:
     networks:
       - lauffeuer
 networks:
-  opentosca:
+  lauffeuer:
     driver: bridge
