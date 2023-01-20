@@ -95,8 +95,9 @@ services:
       HAL_EXPLORER: 'false'
       # activate correct application properties
       SPRING_PROFILES_ACTIVE: docker
-      JWK_URI: http://auth:7080/realms/patternatlas/protocol/openid-connect/certs
+      JWK_URI: http://auth:8080/realms/patternatlas/protocol/openid-connect/certs
       SECURITY_LOGLEVEL: info
+      PATTERN_ATLAS_CONTENT_REPOSITORY_BRANCH: addComponentHostingPatterns
     ports:
       - "1977:1977"
     networks:
