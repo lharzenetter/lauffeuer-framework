@@ -40,7 +40,7 @@ services:
     networks:
       - lauffeuer
   engine-ia-jdk17:
-    image: opentosca/engine-ia:latest-jdk17
+    image: ghcr.io/opentosca/engine-ia:master
     ports:
       - '8093:8080'
     networks:
@@ -66,6 +66,7 @@ services:
       - lauffeuer
     ports: 
       - '2222:2375'
+      - '3306:3306'
       - '9990-9999:9990-9999'
       - '9990-9999:9990-9999/udp'
 ########## PatternAtlas ##########
