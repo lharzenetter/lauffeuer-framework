@@ -120,6 +120,8 @@ services:
       LATEX_RENDERER_PORT: 5030
       URL_SCHEME: http
       AUTH_REALM_URL: http://${PUBLIC_HOSTNAME}:7080/realms/patternatlas
+      CONFIG_SERVER_HOST_NAME: ${PUBLIC_HOSTNAME}
+      CONFIG_SERVER_PORT: 3333
     ports:
       - "1978:80"
     networks:
@@ -141,11 +143,11 @@ services:
     environment:
       ETCD_NAME: config-node1
       ETCD_CORS: "*"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://config-server:2379"
-      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://config-server:3333"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:3333"
       ETCDCTL_API: 3
     ports:
-      - "2379:2379"
+      - "3333:3333"
     networks:
       - lauffeuer
 networks:

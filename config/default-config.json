@@ -6,6 +6,8 @@
     "issue": false,
     "showSettings": true,
     "editing": true,
+    "planqkUi": false,
+    "deploymentModelling": true,
 	"authentication": true
   }
 }
