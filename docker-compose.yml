@@ -121,6 +121,8 @@ services:
       AUTH_REALM_URL: http://${PUBLIC_HOSTNAME}:7080/realms/patternatlas
       CONFIG_SERVER_HOST_NAME: ${PUBLIC_HOSTNAME}
       CONFIG_SERVER_PORT: 3333
+    volumes:
+      - ./config:/opt/init-config.d
     ports:
       - "1978:80"
     networks:
