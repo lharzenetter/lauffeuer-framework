@@ -2,15 +2,13 @@ version: '3'
 services:
 ########## OpenTOSCA ##########
   container:
-    image: opentosca/container:latest
+    image: opentosca/container:lauffeuer
     ports:
       - '1337:1337'
       - '1883:1883' # MQTT
       - '8081-8087:8081-8087'
     environment:
       CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
-      ENGINE_IA_HOSTNAME: engine-ia-jdk8
-      ENGINE_IA_PORT: 8080
       ENGINE_IA_JAVA17_HOSTNAME: engine-ia-jdk17
       ENGINE_IA_JAVA17_PORT: 8080
       ENGINE_PLAN_BPEL_HOSTNAME: engine-plan-bpel
@@ -45,18 +43,18 @@ services:
       - '8093:8080'
     networks:
       - lauffeuer
-  # winery:
-  #   image: opentosca/winery:latest
-  #   environment:
-  #     WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
-  #     WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
-  #     TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
-  #     CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
-  #     WINERY_REPOSITORY_URL: https://github.com/lharzenetter/tosca-lauffeuer-modeling
-  #   ports:
-  #     - '8080:8080'
-  #   networks:
-  #     - lauffeuer
+  winery:
+    image: opentosca/winery:lauffeuer
+    environment:
+      WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
+      WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      CONTAINER_HOSTNAME: ${PUBLIC_HOSTNAME}
+      WINERY_REPOSITORY_URL: https://github.com/lharzenetter/tosca-lauffeuer-modeling
+    ports:
+      - '8080:8080'
+    networks:
+      - lauffeuer
   dind:
     image: docker:20.10-dind
     privileged: true
